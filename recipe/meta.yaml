@@ -1,5 +1,5 @@
 {% set name = "hda" %}
-{% set version = "2.18" %}
+{% set version = "2.20" %}
 
 package:
   name: "{{ name|lower }}"
