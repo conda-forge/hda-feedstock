@@ -1,5 +1,5 @@
 {% set name = "hda" %}
-{% set version = "2.22" %}
+{% set version = "2.26" %}
 {% set python_min = "3.6" %}
 
 package:
