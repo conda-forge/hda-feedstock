@@ -1,0 +1,36 @@
+name: Limit Automerge to Minor and Patch
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check_version_bump:
+    if: github.actor == 'regro-cf-autotick-bot'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR version bump
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const body = context.payload.pull_request.body || "";
+            const versionRegex = /Version:\s+([\d.]+)/g;
+            let match, versions = [];
+
+            while ((match = versionRegex.exec(body)) !== null) {
+              versions.push(match[1]);
+            }
+
+            if (versions.length >= 2) {
+              const [oldVer, newVer] = versions;
+              const [oMajor, oMinor, oPatch] = oldVer.split('.').map(Number);
+              const [nMajor, nMinor, nPatch] = newVer.split('.').map(Number);
+
+              if (nMajor > oMajor) {
+                core.setFailed(`Major version bump detected: ${oldVer} → ${newVer}. Not safe for automerge.`);
+              } else {
+                console.log(`Safe bump: ${oldVer} → ${newVer}`);
+              }
+            } else {
+              console.warn("Could not extract both versions from PR body");
+            }
